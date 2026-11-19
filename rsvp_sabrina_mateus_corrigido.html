@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f8f4ed">
+<title>RSVP | Sabrina & Mateus</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#f8f4ed;--paper:#fffdf9;--ink:#382f27;--muted:#82766a;--gold:#a88b5c;--line:#e7ded1;--green:#55745b;--red:#9a5d55}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Montserrat,Arial,sans-serif}
+.wrap{max-width:1000px;margin:auto;padding:24px 15px 50px}.brand{text-align:center;margin:12px 0 25px}.monogram{font:42px "Cormorant Garamond",serif;color:var(--gold);letter-spacing:5px}
+h1,h2,h3{font-family:"Cormorant Garamond",serif;font-weight:500}h1{font-size:clamp(34px,7vw,54px);margin:4px 0}h2{font-size:30px;margin:8px 0}
+.eyebrow{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold)}.date{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:8px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:clamp(18px,4vw,32px);box-shadow:0 12px 36px #57452a0a;margin:16px 0}
+.narrow{max-width:650px;margin:0 auto}.center{text-align:center}.muted{color:var(--muted);font-size:13px;line-height:1.8}
+label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin:14px 0 7px}
+input,select{width:100%;padding:13px 12px;border:1px solid var(--line);border-radius:3px;background:#fffefa;color:var(--ink);font:14px Montserrat,Arial}
+button{border:1px solid var(--gold);background:var(--gold);color:white;padding:12px 16px;border-radius:3px;font:500 11px Montserrat;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+button.secondary{background:transparent;color:var(--gold)}button.danger{background:var(--red);border-color:var(--red)}button:disabled{opacity:.55}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}.actions button{flex:1;min-width:140px}.hidden{display:none!important}
+.notice{padding:12px;border:1px solid var(--line);background:#faf7f1;font-size:12px;line-height:1.7;margin:13px 0}
+.status{font-size:12px;margin-top:12px;min-height:18px}.error{color:var(--red)}.ok{color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}.stat{padding:14px;border:1px solid var(--line);background:#fffefa}.stat strong{display:block;font:30px "Cormorant Garamond",serif;color:var(--gold)}.stat span{font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:12px}th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);white-space:nowrap}th{font-size:9px;text-transform:uppercase;color:var(--muted);letter-spacing:1px}
+footer{text-align:center;color:var(--muted);font-size:10px;letter-spacing:1px;margin-top:28px}.small{font-size:11px}
+@media(max-width:520px){.actions{flex-direction:column}.actions button{width:100%}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="brand"><div class="monogram">S &amp; M</div><div class="eyebrow">Com alegria, convidamos você</div><h1>Sabrina &amp; Mateus</h1><div class="date">18 DE DEZEMBRO DE 2026 · 18H30</div></header>
+
+<section id="guestView" class="card narrow hidden">
+<div class="center"><div class="eyebrow">Confirmação de presença</div><h2 id="guestHeading">Será uma alegria ter você conosco</h2><p class="muted">Este é seu convite individual.</p></div>
+<div id="guestForm"><label for="guestName">Seu nome completo</label><input id="guestName" maxlength="120" autocomplete="name" placeholder="Digite seu nome completo">
+<div id="companionArea" class="hidden"><label for="companions">Acompanhantes (incluindo somente os autorizados)</label><select id="companions"></select></div>
+<div class="actions"><button id="yesBtn">Confirmar presença</button><button id="noBtn" class="secondary">Não poderei comparecer</button></div></div>
+<div id="guestResult" class="hidden center"><h2>Resposta registrada</h2><p id="guestResultText" class="muted"></p><div id="guestCodeBox" class="notice">Código do convite<br><span id="guestCode" class="monogram">SM-0000</span></div></div>
+<p id="guestStatus" class="status" role="status"></p></section>
+<section id="invalidInvite" class="card narrow center hidden"><h2>Convite não localizado</h2><p class="muted">Confira se o link individual está completo ou fale com os noivos.</p></section>
+
+<section id="adminLogin" class="card narrow hidden"><div class="center"><div class="eyebrow">Área restrita</div><h2>Painel dos noivos</h2></div>
+<label for="email">E-mail</label><input id="email" type="email" autocomplete="username"><label for="password">Senha</label><input id="password" type="password" autocomplete="current-password">
+<div class="actions"><button id="loginBtn">Entrar</button></div><p id="loginStatus" class="status"></p></section>
+
+<section id="adminPanel" class="hidden">
+<div class="card"><div class="topline"><div><div class="eyebrow">Visão geral</div><h2>Lista de convidados</h2></div><button id="logoutBtn" class="secondary">Sair</button></div>
+<div class="grid"><div class="stat"><strong id="total">0</strong><span>Convidados</span></div><div class="stat"><strong id="confirmed">0</strong><span>Confirmados</span></div><div class="stat"><strong id="declined">0</strong><span>Recusaram</span></div><div class="stat"><strong id="pending">0</strong><span>Pendentes</span></div><div class="stat"><strong id="checked">0</strong><span>Check-ins</span></div><div class="stat"><strong id="confirmedPeople">0</strong><span>Pessoas confirmadas</span></div></div>
+<div class="actions"><button id="refreshBtn">Atualizar lista</button><button id="csvBtn" class="secondary">Exportar CSV</button><button id="printBtn" class="secondary">Imprimir</button></div><p id="adminStatus" class="status"></p></div>
+<div class="card"><h2>Adicionar convidado</h2><p class="muted small">Cadastre uma pessoa ou família conforme o convite que será enviado. O link individual será gerado automaticamente.</p>
+<label for="newName">Nome do convidado</label><input id="newName" maxlength="120" placeholder="Nome completo">
+<label for="maxComp">Número máximo de acompanhantes</label><select id="maxComp"><option value="0">Nenhum</option><option value="1">1 acompanhante</option><option value="2">2 acompanhantes</option><option value="3">3 acompanhantes</option><option value="4">4 acompanhantes</option><option value="5">5 acompanhantes</option></select>
+<div class="actions"><button id="addBtn">Cadastrar e gerar link</button></div><p id="addStatus" class="status"></p><div id="newLinkArea" class="notice hidden"><strong>Link individual criado:</strong><input id="newLink" readonly><div class="actions"><button id="copyLinkBtn" class="secondary">Copiar link</button></div><p class="small muted">Envie este link somente ao convidado correspondente.</p></div></div>
+<div class="card"><div class="topline"><h2>Convidados cadastrados</h2><input id="search" style="max-width:260px" placeholder="Buscar nome ou código"></div><div class="table-wrap"><table><thead><tr><th>Nome</th><th>Código</th><th>Resposta</th><th>Acompanhantes</th><th>Total de pessoas</th><th>Check-in</th><th>Link</th><th>Ação</th></tr></thead><tbody id="rows"><tr><td colspan="8">Entre no painel para carregar.</td></tr></tbody></table></div></div>
+<div class="card"><h2>Registrar check-in</h2><label for="checkCode">Código do convidado</label><input id="checkCode" placeholder="SM-0001"><div class="actions"><button id="checkBtn">Registrar chegada</button></div><p id="checkStatus" class="status"></p></div>
+</section>
+<section id="setup" class="card narrow hidden"><h2>Configuração necessária</h2><p class="muted">Confira a configuração do Firebase neste arquivo. Não publique senhas nem credenciais privadas.</p></section>
+<footer>SABRINA &amp; MATEUS · 18.12.2026</footer>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDL8y1mGyI0QRu4B41342g6WcEF0R8kxX8",
+  authDomain: "sabrina-mateus-rsvp.firebaseapp.com",
+  projectId: "sabrina-mateus-rsvp",
+  storageBucket: "sabrina-mateus-rsvp.firebasestorage.app",
+  messagingSenderId: "751909840692",
+  appId: "1:751909840692:web:dd6d09457d36fcc002e761"
+};
+// Cole aqui o UID da conta administradora copiado do Firebase Authentication.
+const ADMIN_UID = "BS4mjc7jBmfuw9pLqt8odd588sL2";
+const app = firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth(), db = firebase.firestore();
+const $ = id => document.getElementById(id);
+const show = id => $(id).classList.remove("hidden"), hide = id => $(id).classList.add("hidden");
+function msg(id,t,kind=""){ $(id).textContent=t; $(id).className="status "+kind; }
+function token(){return new URLSearchParams(location.search).get("convite");}
+function randomToken(){const a=new Uint8Array(24);crypto.getRandomValues(a);return Array.from(a,x=>x.toString(16).padStart(2,"0")).join("");}
+function baseUrl(t){const u=new URL(location.href);u.search="";u.hash="";u.pathname=u.pathname.replace(/\/admin\/?$/,"/");return u.href+"?convite="+encodeURIComponent(t);}
+let guests=[];
+async function ensureAnon(){if(!auth.currentUser) await auth.signInAnonymously();}
+async function loadGuest(){
+ const t=token(); if(!t){show("invalidInvite");return;}
+ show("guestView");
+ try{
+  await ensureAnon();
+  const ref=db.collection("convidados").doc(t), snap=await ref.get();
+  if(!snap.exists){hide("guestView");show("invalidInvite");return;}
+  const g=snap.data(); $("guestHeading").textContent="Olá, "+g.name;
+  $("guestName").value=g.name;
+  const sel=$("companions");sel.innerHTML="";
+  for(let i=0;i<=Number(g.maxCompanions||0);i++){let o=document.createElement("option");o.value=i;o.textContent=i===0?"Somente eu":i+" acompanhante(s)";sel.appendChild(o);}
+  if(Number(g.maxCompanions||0)>0)show("companionArea");
+  if(g.response){hide("guestForm");show("guestResult");$("guestResultText").textContent=g.response==="yes"?"Sua presença está confirmada. Obrigado!":"Sua resposta foi registrada. Agradecemos por avisar."; $("guestCode").textContent=g.code; if(g.response==="yes") show("guestCodeBox"); else hide("guestCodeBox");}
+  else { $("guestName").readOnly=true; }
+  window.guestRef=ref;window.guestData=g;
+ }catch(e){msg("guestStatus","Não foi possível abrir o convite. Confira a conexão e tente novamente.","error");}
+}
+async function submitGuest(answer){
+ try{
+  if(!window.guestRef)throw Error("Convite não carregado");
+  const n=Number($("companions").value||0), g=window.guestData;
+  if(n>Number(g.maxCompanions||0))throw Error("Quantidade inválida");
+  await window.guestRef.update({response:answer,companions:n,responseAt:firebase.firestore.FieldValue.serverTimestamp()});
+  hide("guestForm");show("guestResult");$("guestResultText").textContent=answer==="yes"?"Sua presença está confirmada. Será uma alegria celebrar com você!":"Sua resposta foi registrada. Agradecemos por avisar."; $("guestCode").textContent=g.code; if(answer==="yes") show("guestCodeBox"); else hide("guestCodeBox");
+ }catch(e){msg("guestStatus","Não foi possível registrar. Verifique a conexão ou fale com os noivos.","error");}
+}
+function isAdmin(){return auth.currentUser && auth.currentUser.uid===ADMIN_UID;}
+async function requireAdmin(){if(!isAdmin())throw Error("Conta sem autorização administrativa.");}
+async function loadAdmin(){
+ await requireAdmin();
+ const snap=await db.collection("convidados").orderBy("createdAt","desc").get();
+ guests=snap.docs.map(d=>({id:d.id,...d.data()}));
+ const yes=guests.filter(g=>g.response==="yes").length,no=guests.filter(g=>g.response==="no").length,ci=guests.filter(g=>g.checkedIn).length;
+ $("total").textContent=guests.length;$("confirmed").textContent=yes;$("declined").textContent=no;$("pending").textContent=guests.length-yes-no;$("checked").textContent=ci;
+ render();msg("adminStatus","Lista atualizada.","ok");
+}
+function render(){
+ const q=$("search").value.toLowerCase(), list=guests.filter(g=>(g.name+" "+g.code).toLowerCase().includes(q));$("rows").innerHTML="";
+ if(!list.length){$("rows").innerHTML='<tr><td colspan="6">Nenhum convidado encontrado.</td></tr>';return;}
+ list.forEach(g=>{const tr=document.createElement("tr");
+ [g.name,g.code,g.response==="yes"?"Confirmado":g.response==="no"?"Recusado":"Pendente",g.checkedIn?"Realizado":"Pendente"].forEach(v=>{let td=document.createElement("td");td.textContent=v||"";tr.appendChild(td);});
+ let linkTd=document.createElement("td"),a=document.createElement("a");a.href=baseUrl(g.id);a.textContent="Abrir link";a.target="_blank";linkTd.appendChild(a);tr.appendChild(linkTd);
+ let act=document.createElement("td");
+ if(!g.checkedIn && g.response==="yes"){let b=document.createElement("button");b.className="secondary";b.textContent="Check-in";b.onclick=()=>{$("checkCode").value=g.code;checkin();};act.appendChild(b);}else act.textContent="—";
+ tr.appendChild(act);$("rows").appendChild(tr);
+ });
+}
+async function addGuest(){
+ try{await requireAdmin();const name=$("newName").value.trim(),max=Number($("maxComp").value);
+ if(!name)throw Error("Digite o nome do convidado.");
+ let id=randomToken(),code="SM-"+String(guests.length+1).padStart(4,"0");
+ await db.collection("convidados").doc(id).set({name,code,maxCompanions:max,response:null,companions:0,checkedIn:false,createdAt:firebase.firestore.FieldValue.serverTimestamp(),responseAt:null});
+ $("newName").value="";$("newLink").value=baseUrl(id);show("newLinkArea");msg("addStatus","Convidado cadastrado! Copie o link individual.","ok");await loadAdmin();
+ }catch(e){msg("addStatus",e.message||"Não foi possível cadastrar.","error");}
+}
+async function checkin(){
+ try{await requireAdmin();let code=$("checkCode").value.trim().toUpperCase(),g=guests.find(x=>x.code===code);
+ if(!g)throw Error("Código não encontrado.");if(g.response!=="yes")throw Error("Este convidado ainda não confirmou presença.");
+ await db.collection("convidados").doc(g.id).update({checkedIn:true,checkedInAt:firebase.firestore.FieldValue.serverTimestamp()});
+ msg("checkStatus","Check-in registrado!","ok");await loadAdmin();
+ }catch(e){msg("checkStatus",e.message||"Não foi possível registrar.","error");}
+}
+function csv(){
+ const rows=[["Nome","Código","Resposta","Acompanhantes","Total de pessoas","Check-in"],...guests.map(g=>[g.name,g.code,g.response==="yes"?"Confirmado":g.response==="no"?"Recusado":"Pendente",g.response==="yes"?(g.companions||0):"",g.response==="yes"?1+Number(g.companions||0):"",g.checkedIn?"Sim":"Não"])];
+ const data="\uFEFF"+rows.map(r=>r.map(x=>'"'+String(x??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([data],{type:"text/csv;charset=utf-8"}));a.download="rsvp-sabrina-mateus.csv";a.click();URL.revokeObjectURL(a.href);
+}
+$("yesBtn").onclick=()=>submitGuest("yes");$("noBtn").onclick=()=>submitGuest("no");
+$("loginBtn").onclick=async()=>{msg("loginStatus","Entrando…");try{await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value);if(!isAdmin())throw Error("Esta conta não está autorizada como administradora.");hide("adminLogin");show("adminPanel");await loadAdmin();}catch(e){msg("loginStatus",e.message||"Falha no login.","error");}};
+$("logoutBtn").onclick=()=>auth.signOut().then(()=>{hide("adminPanel");show("adminLogin");});
+$("addBtn").onclick=addGuest;$("refreshBtn").onclick=()=>loadAdmin().catch(e=>msg("adminStatus",e.message,"error"));
+$("checkBtn").onclick=checkin;$("csvBtn").onclick=csv;$("printBtn").onclick=()=>print();$("search").oninput=render;
+$("copyLinkBtn").onclick=async()=>{try{await navigator.clipboard.writeText($("newLink").value);msg("addStatus","Link copiado!","ok");}catch(e){$("newLink").select();msg("addStatus","Selecione e copie o link.","");}};
+const isAdminPath=new URLSearchParams(location.search).get("admin")==="1";
+if(isAdminPath){show("adminLogin");}else{loadGuest();}
+</script></body></html>
