@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Importar convidados — Sabrina & Mateus</title>
+<style>
+:root{--ink:#3b3028;--muted:#786b60;--gold:#a58a60;--paper:#fcfaf6;--line:#e8dfd4}
+*{box-sizing:border-box}body{margin:0;padding:20px;background:var(--paper);color:var(--ink);font:16px/1.5 Arial,sans-serif}
+main{max-width:660px;margin:28px auto;padding:26px;background:#fff;border:1px solid var(--line);border-radius:18px}
+h1{font:400 30px Georgia,serif;text-align:center;margin:0 0 5px}.sub{text-align:center;color:var(--muted);margin:0 0 22px}
+.note{padding:13px;background:#f7f2eb;border-radius:10px;color:#66594e;font-size:14px}
+label{display:block;font-weight:600;margin:14px 0 6px}input{width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;font-size:16px}
+button{width:100%;padding:14px;margin-top:16px;border:0;border-radius:10px;background:var(--gold);color:white;font-size:16px;font-weight:bold}
+button:disabled{opacity:.55}#status{white-space:pre-wrap;padding:14px;margin-top:18px;background:#f7f5f1;border-radius:10px;min-height:50px}
+.hidden{display:none}.small{text-align:center;color:var(--muted);font-size:13px;margin-top:16px}
+</style>
+</head>
+<body>
+<main>
+<h1>Sabrina & Mateus</h1>
+<p class="sub">Importação da lista de convidados</p>
+<p class="note">Este arquivo adiciona os convidados à coleção <b>convidados</b>. Não apaga nem substitui documentos existentes. Nomes já cadastrados serão ignorados.</p>
+<section id="login">
+<label for="email">E-mail da conta administradora</label>
+<input id="email" type="email" autocomplete="username" placeholder="Seu e-mail">
+<label for="password">Senha</label>
+<input id="password" type="password" autocomplete="current-password" placeholder="Sua senha">
+<button id="loginBtn">Entrar como administradora</button>
+</section>
+<section id="ready" class="hidden">
+<p id="logged"></p>
+<button id="importBtn">Cadastrar os 114 convidados</button>
+<button id="logoutBtn" style="background:#8b8178">Sair</button>
+</section>
+<div id="status" role="status">Aguardando login.</div>
+<p class="small">Abra esta página pelo GitHub Pages, não diretamente pelo gerenciador de arquivos do celular.</p>
+</main>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDL8y1mGyI0QRu4B41342g6WcEF0R8kxX8",
+  authDomain: "sabrina-mateus-rsvp.firebaseapp.com",
+  projectId: "sabrina-mateus-rsvp",
+  storageBucket: "sabrina-mateus-rsvp.firebasestorage.app",
+  messagingSenderId: "751909840692",
+  appId: "1:751909840692:web:dd6d09457d36fcc002e761"
+};
+const ADMIN_UID = "BS4mjc7jBmfuw9pLqt8odd588sL2";
+const GUESTS = [
+  "Cintia Mascarenhas Pimentel",
+  "Sidenir Batista de Almeida",
+  "Wendy Mascarenhas",
+  "Pyetra Mascarenhas",
+  "Lavínia Mascarenhas",
+  "Cristyan Thiago Mascarenhas",
+  "Cindy Mascarenhas",
+  "Lorenzo de Almeida",
+  "Henry de Almeida",
+  "Elenir Batista de Almeida",
+  "Emily de Almeida Alves",
+  "Carol Will",
+  "Francisco Batista de Almeida",
+  "Yris Will",
+  "Lucas Gregório",
+  "Eloah Will",
+  "Icaro Will",
+  "Solange Mascarenhas dos Santos",
+  "Mirison Bazílio Pimentel",
+  "Ingrid dos Santos Fernandes",
+  "Alexandre Nascimento",
+  "Singrid Natália dos Santos",
+  "Carlos Eduardo dos Santos",
+  "Talisson dos Santos Fernandes",
+  "Ana Luiza Justo Machado",
+  "Glaucia dos Santos Vidal",
+  "Guithyerres",
+  "Vitor Emanuel",
+  "Elias Miguel",
+  "Kamila dos Santos Fernandes",
+  "Rafael Fernandes dos Santos",
+  "Zedequias dos Santos Fernandes",
+  "Sindel Leal",
+  "Christyan Renato",
+  "Elizabeth Mascarenhas dos Santos",
+  "Creuza Mascarenhas dos Santos",
+  "Deborah Mascarenhas Pereira",
+  "Nicole Pereira",
+  "Enzo Pereira",
+  "Marlúcia Chaves dos Santos",
+  "Gilmar dos Anjos",
+  "Gilmadson Chaves dos Anjos",
+  "Lorrayne Oliveira",
+  "Helloisa Silva",
+  "Gustavo dos Anjos",
+  "Jaqueline da Silva",
+  "Marcos Antonio da Silva",
+  "Paulo da Silva",
+  "Eloah da Silva",
+  "Kaio dos Santos",
+  "Milena dos Anjos Amaral",
+  "Cleide dos Anjos",
+  "Maiara Pinheiro",
+  "Mariana Pinheiro",
+  "João Vitor Pinheiro",
+  "Renan Corrêa",
+  "Ruan Corrêa",
+  "Brunella dos Anjos Alves",
+  "Luzeny dos Anjos",
+  "Brunella Tamanini",
+  "Sophia Tamanini",
+  "Laura Tamanini",
+  "Maria Editi",
+  "Maycon Vinícius",
+  "Jhemilly Taymara",
+  "Lara Costa",
+  "Letícia Eduarda Alves",
+  "Priscila Carvalho",
+  "Maykon Carvalho",
+  "Victor Emanuel Carvalho",
+  "Lailton de Mendonça Nascimento",
+  "Ramon Herculano",
+  "Rayara Silva",
+  "Mayara Evelyn",
+  "Vanessa Nascimento",
+  "Sophia Lauren",
+  "Maria Gabriela",
+  "Lean",
+  "Maria Penha",
+  "Sara",
+  "Paulo",
+  "Dejanira Barsa",
+  "Aline Barsa",
+  "Marlúcia Portella",
+  "Maiara Caxoeiro",
+  "Yandra Caxoeiro",
+  "Yasmin Caxoeiro",
+  "Ysabele Caxoeiro",
+  "Ana Caxoeiro",
+  "Edmilson Caxoeiro",
+  "Eliano Coelho",
+  "Edna",
+  "Sidnéia Sagramento",
+  "Emily Vitória dos Anjos",
+  "Leila Silva",
+  "Keitson",
+  "Miguel",
+  "Laura",
+  "Adriana Sueira",
+  "Daniele de Paula",
+  "Anderson de Paula",
+  "Lauane",
+  "Dajuda Conceição",
+  "Alex Candeia",
+  "Bernardo Candeia",
+  "Willians Dias Costa",
+  "Andreia Rocha Costa",
+  "Rebeca Feu",
+  "Rosiane dos Santos",
+  "Ana Alice",
+  "Kaique Santos",
+  "Vitor dos Anjos",
+  "Mirela Drosdrovisk",
+  "Ana Paula Thomé"
+];
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const el = id => document.getElementById(id);
+const status = message => el("status").textContent = message;
+const normalize = value => String(value || "").normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "").trim().toLowerCase().replace(/\s+/g, " ");
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    el("login").classList.remove("hidden");
+    el("ready").classList.add("hidden");
+    status("Entre com sua conta administradora.");
+    return;
+  }
+  if (user.uid !== ADMIN_UID) {
+    el("login").classList.add("hidden");
+    el("ready").classList.add("hidden");
+    status("Esta conta não é a administradora autorizada. Saindo...");
+    auth.signOut();
+    return;
+  }
+  el("login").classList.add("hidden");
+  el("ready").classList.remove("hidden");
+  el("logged").textContent = "Conta administradora autenticada.";
+  status("Login confirmado. Toque no botão para iniciar.");
+});
+
+el("loginBtn").addEventListener("click", async () => {
+  const email = el("email").value.trim();
+  const password = el("password").value;
+  if (!email || !password) return status("Preencha e-mail e senha.");
+  el("loginBtn").disabled = true;
+  try { await auth.signInWithEmailAndPassword(email, password); }
+  catch (error) { status("Falha no login: " + (error.message || error)); }
+  finally { el("loginBtn").disabled = false; }
+});
+el("logoutBtn").addEventListener("click", () => auth.signOut());
+
+el("importBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user || user.uid !== ADMIN_UID) return status("Entre com a conta administradora.");
+  const button = el("importBtn");
+  button.disabled = true;
+  try {
+    status("Verificando os convidados já cadastrados...");
+    const snapshot = await db.collection("convidados").get();
+    const existingNames = new Set();
+    const usedCodes = new Set();
+    snapshot.forEach(doc => {
+      const data = doc.data() || {};
+      if (data.name) existingNames.add(normalize(data.name));
+      if (data.code) usedCodes.add(String(data.code).trim());
+    });
+
+    const pending = GUESTS.filter(name => !existingNames.has(normalize(name)));
+    const skipped = GUESTS.length - pending.length;
+    if (pending.length === 0) {
+      status("Os 114 nomes já estão cadastrados. Nenhum documento novo foi criado.");
+      return;
+    }
+
+    let created = 0;
+    let number = 1;
+    for (const name of pending) {
+      let code;
+      do { code = "SM-" + String(number++).padStart(4, "0"); }
+      while (usedCodes.has(code));
+      usedCodes.add(code);
+
+      const ref = db.collection("convidados").doc();
+      await ref.set({
+        name: name,
+        code: code,
+        maxCompanions: 0,
+        companions: 0,
+        response: null,
+        checkedIn: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+        responseAt: null
+      });
+      created++;
+      status("Cadastrando " + created + " de " + pending.length + " convidados novos...");
+    }
+    status("Importação concluída!\nNovos cadastros: " + created +
+      "\nNomes já existentes ignorados: " + skipped +
+      "\nTotal de nomes na lista: " + GUESTS.length +
+      "\n\nNenhum documento existente foi apagado ou substituído.");
+  } catch (error) {
+    status("A importação foi interrompida: " + (error.message || error) +
+      "\n\nOs documentos já gravados foram preservados. Você pode executar novamente; nomes já cadastrados serão ignorados.");
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
